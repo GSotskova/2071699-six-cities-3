@@ -16,10 +16,11 @@ import {UserModel} from '../modules/user/user.entity.js';
 import {Offer} from '../types/offer.type.js';
 import {LoggerInterface} from '../common/logger/logger.interface.js';
 import {DatabaseInterface} from '../common/database-client/database.interface.js';
+import {ConfigInterface} from '../common/config/config.interface.js';
+import ConfigService from '../common/config/config.service.js';
 
 const DEFAULT_DB_PORT = 27017;
 const DEFAULT_USER_PASSWORD = '123456';
-
 
 export default class ImportCommand implements CliCommandInterface {
   public readonly name = '--import';
@@ -29,6 +30,7 @@ export default class ImportCommand implements CliCommandInterface {
   private databaseService!: DatabaseInterface;
   private logger: LoggerInterface;
   private salt!: string;
+  private config!: ConfigInterface;
 
   constructor() {
     this.onLine = this.onLine.bind(this);
@@ -39,6 +41,8 @@ export default class ImportCommand implements CliCommandInterface {
     this.locationService = new LocationService(this.logger, LocationModel);
     this.userService = new UserService(this.logger, UserModel);
     this.databaseService = new DatabaseService(this.logger);
+    this.config = new ConfigService(this.logger);
+    this.salt = this.config.get('SALT');
   }
 
   private async saveOffer(offer: Offer) {
@@ -68,9 +72,8 @@ export default class ImportCommand implements CliCommandInterface {
     this.databaseService.disconnect();
   }
 
-  public async execute(filename: string, login: string, password: string, host: string, dbname: string, salt: string): Promise<void> {
+  public async execute(filename: string, login: string, password: string, host: string, dbname: string): Promise<void> {
     const uri = getURI(login, password, host, DEFAULT_DB_PORT, dbname);
-    this.salt = salt;
 
     await this.databaseService.connect(uri);
     const fileReader = new TSVFileReader(filename.trim());
@@ -84,4 +87,3 @@ export default class ImportCommand implements CliCommandInterface {
     }
   }
 }
-
