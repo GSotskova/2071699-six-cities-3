@@ -6,12 +6,14 @@ import {Component} from './types/component.types.js';
 import {userContainer} from './modules/user/user.container.js';
 import {locationContainer} from './modules/location/location.container.js';
 import {offerContainer} from './modules/offer/offer.container.js';
+import {commentContainer} from './modules/comment/comment.container.js';
 
 const mainContainer = Container.merge(
   applicationContainer,
   userContainer,
   locationContainer,
-  offerContainer
+  offerContainer,
+  commentContainer
 );
 
 async function bootstrap() {

@@ -7,7 +7,7 @@ import {Component} from '../../types/component.types.js';
 
 const offerContainer = new Container();
 
-offerContainer.bind<OfferServiceInterface>(Component.OfferServiceInterface).to(OfferService);
+offerContainer.bind<OfferServiceInterface>(Component.OfferServiceInterface).to(OfferService)
 offerContainer.bind<types.ModelType<OfferEntity>>(Component.OfferModel).toConstantValue(OfferModel);
 
 export {offerContainer};

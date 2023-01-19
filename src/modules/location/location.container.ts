@@ -7,7 +7,7 @@ import {Component} from '../../types/component.types.js';
 
 const locationContainer = new Container();
 
-locationContainer.bind<LocationServiceInterface>(Component.OfferServiceInterface).to(LocationService);
-locationContainer.bind<types.ModelType<LocationEntity>>(Component.OfferModel).toConstantValue(LocationModel);
+locationContainer.bind<LocationServiceInterface>(Component.LocationServiceInterface).to(LocationService);
+locationContainer.bind<types.ModelType<LocationEntity>>(Component.LocationModel).toConstantValue(LocationModel);
 
 export {locationContainer};
