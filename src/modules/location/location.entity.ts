@@ -13,6 +13,9 @@ export interface LocationEntity extends defaultClasses.Base {}
 })
 export class LocationEntity extends defaultClasses.TimeStamps implements LocationType {
   @prop({required: true})
+  public city!: string;
+
+  @prop({required: true})
   public latitude!: number;
 
   @prop({required: true})

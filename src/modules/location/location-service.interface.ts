@@ -6,6 +6,8 @@ import {LocationType} from '../../types/location-type.js';
 export interface LocationServiceInterface {
   create(dto: CreateLocationDto): Promise<DocumentType<LocationEntity>>;
   findByLocationId(LocationId: string): Promise<DocumentType<LocationEntity> | null>;
+  findByLocationCity(City: string, dto: CreateLocationDto): Promise<DocumentType<LocationEntity>>;
+  findIdByCity(City: string): Promise<string | null >;
   findByLocation(Location: LocationType): Promise<DocumentType<LocationEntity> | null>;
   findByLocationOrCreate(Location: LocationType, dto: CreateLocationDto): Promise<DocumentType<LocationEntity>>;
 }

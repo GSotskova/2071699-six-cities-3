@@ -1,4 +1,100 @@
 # Тестовые данные
-GET http://localhost:3123/api HTTP/1.1
+GET http://localhost:4000/api HTTP/1.1
 
 ###
+
+###
+
+# Пользователи
+## Создание нового пользователя (5.8)
+POST http://localhost:4000/users/create HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "Jack",
+  "email": "torans48@overlook.net",
+  "avatarPath": "torrance.png",
+  "userType": "pro",
+  "password": "123456"
+}
+###
+
+## Вход в закрытую часть приложения (5.9)
+POST http://localhost:4000/users/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "torans44@overlook.net",
+  "password": "123456"
+}
+###
+## Выход из закрытой части приложения (5.10)
+DELETE  http://localhost:4000/users/logout HTTP/1.1
+Content-Type: application/json
+###
+
+## Проверка состояния пользователя (5.11)
+GET  http://localhost:4000/users/login HTTP/1.1
+Content-Type: application/json
+###
+
+# Предложения
+## Создание нового предложения (5.1)
+POST http://localhost:4000/offers/create HTTP/1.1
+Content-Type: application/json
+
+{
+  "title": "Offer 102",
+  "description": "Предложения 100",
+  "postDate": "2023-01-25T08:20:40.283Z",
+  "city": "Paris",
+  "prevImg": "img100.jpg",
+  "image": ["photo100.jpg", "photo102.jpg", "photo103.jpg", "photo104.jpg", "photo105.jpg", "photo106.jpg"],
+  "isPremium": true,
+  "isFavorite":true,
+  "rating": 2.5,
+  "type": "room",
+  "rooms": 1,
+  "guests":2,
+  "price": 10000,
+  "goods": ["Breakfast", "Washer"],
+  "userId": "user3@mail.com"
+}
+###
+
+## Редактирование предложения (5.2)
+PATCH http://localhost:4000/offers/63d18e415077efc80a897489 HTTP/1.1
+Content-Type: application/json
+
+{
+  "isPremium": false
+}
+###
+
+## Удаление предложения по аренде (5.3)
+DELETE  http://localhost:4000/offers/63d2e39409a949774789773d HTTP/1.1
+Content-Type: application/json
+###
+
+## Получить список предложений по аренде (5.4)
+GET http://localhost:4000/offers HTTP/1.1
+Content-Type: application/json
+###
+
+## Детальная информация по предложению (5.5)
+GET http://localhost:4000/offers/63d18e415077efc80a897489 HTTP/1.1
+Content-Type: application/json
+###
+
+## Премиальные предложения для города (5.12)
+GET http://localhost:4000/offers/Paris HTTP/1.1
+###
+
+## Список избранных предложений (5.13)
+GET http://localhost:4000/offers/favorite HTTP/1.1
+###
+
+## Добавление и удаление предложения в/из избранного (5.14)
+PATCH http://localhost:4000/offers/favorite/63d18e415077efc80a897489/1 HTTP/1.1
+###
+

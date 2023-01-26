@@ -8,16 +8,30 @@ import {LoggerInterface} from '../../common/logger/logger.interface.js';
 import UpdateOfferDto from './dto/update-offer.dto.js';
 import {DEFAULT_OFFER_COUNT, OFFER_PREMIUM_COUNT} from './offer.constant.js';
 import {SortType} from '../../types/sort-type.enum.js';
+import { LocationServiceInterface } from '../location/location-service.interface.js';
+import LocationService from '../../modules/location/location.service.js';
+import {LocationModel} from '../../modules/location/location.entity.js';
+import { UserServiceInterface } from '../user/user-service.interface.js';
+import { UserModel } from '../user/user.entity.js';
+import UserService from '../user/user.service.js';
 
 @injectable()
 export default class OfferService implements OfferServiceInterface {
+  private locationService!: LocationServiceInterface;
+  private userService!: UserServiceInterface;
   constructor(
     @inject(Component.LoggerInterface) private readonly logger: LoggerInterface,
-    @inject(Component.OfferModel) private readonly offerModel: types.ModelType<OfferEntity>
-  ) {}
+    @inject(Component.OfferModel) private readonly offerModel: types.ModelType<OfferEntity>,
+  ) {
+    this.locationService = new LocationService(this.logger, LocationModel);
+    this.userService = new UserService(this.logger, UserModel);
+  }
 
   public async create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>> {
-    const result = await this.offerModel.create(dto);
+    const user = await this.userService.findByEmail(dto.userId);
+    const location = await this.locationService.findIdByCity(dto.city);
+    const result = await this.offerModel.create({...dto, userId: user?._id.toString(), locationId: location});
+
     this.logger.info(`New offer created: ${dto.title}`);
 
     return result;
@@ -30,6 +44,9 @@ export default class OfferService implements OfferServiceInterface {
       .exec();
   }
 
+  public async findByTitle(title: string): Promise<DocumentType<OfferEntity> | null> {
+    return this.offerModel.findOne({title}).exec();
+  }
 
   public async find(count?: number): Promise<DocumentType<OfferEntity>[]> {
     const limit = count ?? DEFAULT_OFFER_COUNT;
@@ -86,9 +103,9 @@ export default class OfferService implements OfferServiceInterface {
       }}).exec();
   }
 
-  public async findPremium(): Promise<DocumentType<OfferEntity>[]> {
+  public async findPremium(cityName: string): Promise<DocumentType<OfferEntity>[]> {
     return this.offerModel
-      .find({isPremium: true}, {}, {OFFER_PREMIUM_COUNT})
+      .find({isPremium: true, city: cityName}, {}, {OFFER_PREMIUM_COUNT})
       .sort({postDate: SortType.Down})
       .populate(['userId', 'locationId'])
       .exec();

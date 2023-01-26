@@ -44,7 +44,7 @@ paths:
         "409":
           description: Предложение не создано
   /offers/{offerId}:
-    put:
+    patch:
       tags:
         - offers
       summary: Редактирование предложения #5.2
@@ -164,7 +164,7 @@ paths:
             description: Список избранных предложений не получен
 
   /offers/favorite/{offerId}/{status}:
-      post:
+      patch:
         tags:
           - offers
         summary: Добавление и удаление предложения в/из избранного #5.14

@@ -51,7 +51,13 @@ export default class ImportCommand implements CliCommandInterface {
       password: DEFAULT_USER_PASSWORD
     }, this.salt);
 
-    const location = await this.locationService.findByLocationOrCreate(offer.location, offer.location);
+    const location = await this.locationService.findByLocationCity(
+      offer.city,
+      {
+        city: offer.city,
+        latitude: offer.location.latitude,
+        longitude: offer.location.longitude
+      });
 
 
     await this.offerService.create({

@@ -28,6 +28,27 @@ export default class LocationService implements LocationServiceInterface {
     return this.locationModel.findOne(Location).exec();
   }
 
+  public async findByLocationCity(City: string, dto: CreateLocationDto): Promise<DocumentType<LocationEntity>> {
+    const existedLocation = await this.locationModel.findOne({city: City});
+
+    if (existedLocation) {
+      return existedLocation;
+    }
+
+    return this.create(dto);
+  }
+
+  public async findIdByCity(City: string): Promise<string | null > {
+    const existedLocation = await this.locationModel.findOne({city: City});
+
+    if (existedLocation) {
+      return existedLocation._id.toString();
+    }
+
+    return '';
+  }
+
+
   public async findByLocationOrCreate(Location: LocationType, dto: CreateLocationDto): Promise<DocumentType<LocationEntity>> {
     const existedLocation = await this.findByLocation(Location);
 
