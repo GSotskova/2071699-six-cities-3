@@ -64,6 +64,7 @@ export default class ImportCommand implements CliCommandInterface {
       ...offer,
       userId: user.id,
       locationId: location.id,
+      userEmail: user.email
     });
   }
 

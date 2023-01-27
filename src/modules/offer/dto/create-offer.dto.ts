@@ -18,6 +18,7 @@ export default class CreateOfferDto {
   public price!: number;
   public goods!: GoodType[];
   public userId!: string;
+  public userEmail!: string;
   public locationId!: string;
 }
 

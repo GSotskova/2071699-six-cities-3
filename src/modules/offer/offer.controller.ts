@@ -24,9 +24,9 @@ export default class OfferController extends Controller {
     this.addRoute({path: '/', method: HttpMethod.Get, handler: this.index});
     this.addRoute({path: '/create', method: HttpMethod.Post, handler: this.create});
     this.addRoute({path: '/favorite', method: HttpMethod.Get, handler: this.getFavotite});
+    this.addRoute({path: '/:offerid', method: HttpMethod.Get, handler: this.getOne});
     this.addRoute({path: '/favorite/:offerid/:status', method: HttpMethod.Patch, handler: this.setStatusFavotite});
     this.addRoute({path: '/:cityname', method: HttpMethod.Get, handler: this.getPremium});
-    this.addRoute({path: '/:offerid', method: HttpMethod.Get, handler: this.getOne});
     this.addRoute({path: '/:offerid', method: HttpMethod.Patch, handler: this.edit});
     this.addRoute({path: '/:offerid', method: HttpMethod.Delete, handler: this.delete});
   }
