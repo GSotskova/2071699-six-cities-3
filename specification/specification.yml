@@ -122,7 +122,7 @@ paths:
                 schema:
                   $ref: '#/components/schemas/offers'
 
-  /offers/{city}:
+  /offers/premium/{city}:
       get:
         tags:
           - offers

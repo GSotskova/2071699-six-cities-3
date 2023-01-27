@@ -88,7 +88,7 @@ Content-Type: application/json
 ###
 
 ## Премиальные предложения для города (5.12)
-GET http://localhost:4000/offers/Paris HTTP/1.1
+GET http://localhost:4000/offers/premium/Paris HTTP/1.1
 ###
 
 ## Список избранных предложений (5.13)
