@@ -163,7 +163,7 @@ paths:
           "404":
             description: Список избранных предложений не получен
 
-  /offers/favorite/{offerId}/{status}:
+  /offers/favorite/{offerId}:
       patch:
         tags:
           - offers
@@ -429,7 +429,7 @@ components:
     comment:
       type: object
       properties:
-        comment:
+        text:
           type: string
           example: Комментарий 1
           minLength: 10

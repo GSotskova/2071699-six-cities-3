@@ -11,30 +11,21 @@ import {SortType} from '../../types/sort-type.enum.js';
 import { LocationServiceInterface } from '../location/location-service.interface.js';
 import LocationService from '../../modules/location/location.service.js';
 import {LocationModel} from '../../modules/location/location.entity.js';
-import { UserServiceInterface } from '../user/user-service.interface.js';
-import { UserModel } from '../user/user.entity.js';
-import UserService from '../user/user.service.js';
 
 @injectable()
 export default class OfferService implements OfferServiceInterface {
   private locationService!: LocationServiceInterface;
-  private userService!: UserServiceInterface;
   constructor(
     @inject(Component.LoggerInterface) private readonly logger: LoggerInterface,
     @inject(Component.OfferModel) private readonly offerModel: types.ModelType<OfferEntity>,
   ) {
     this.locationService = new LocationService(this.logger, LocationModel);
-    this.userService = new UserService(this.logger, UserModel);
   }
 
   public async create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>> {
-    const userID = dto.userId === ' ' ?
-      await this.userService.findIdByEmail(dto.userEmail)
-      : dto.userId;
-
     const location = await this.locationService.findIdByCity(dto.city);
 
-    const result = await this.offerModel.create({...dto, userId: userID, locationId: location});
+    const result = await this.offerModel.create({...dto, locationId: location});
 
     this.logger.info(`New offer created: ${dto.title}`);
 
@@ -102,10 +93,12 @@ export default class OfferService implements OfferServiceInterface {
   }
 
   public async incCommentCount(offerId: string): Promise<DocumentType<OfferEntity> | null> {
+    const newRating = await this.updateRating(offerId);
     return this.offerModel
-      .findByIdAndUpdate(offerId, {'$inc': {
-        commentCount: 1,
-      }}).exec();
+      .findByIdAndUpdate(offerId, {
+        '$set': {rating: newRating},
+        '$inc': {commentCount: 1}
+      }).exec();
   }
 
   public async findPremium(cityName: string): Promise<DocumentType<OfferEntity>[]> {
