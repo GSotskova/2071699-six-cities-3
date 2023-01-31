@@ -6,9 +6,11 @@
 /docs/
 .idea/*
 /mocks/test.tsv
+/mocks/img
 
 .DS_Store
 coverage
 *.log
 *.env
 /mongodb/
+/upload/

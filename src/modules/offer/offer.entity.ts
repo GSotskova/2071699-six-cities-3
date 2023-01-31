@@ -4,6 +4,7 @@ import { HomeType } from '../../types/home-type.enum.js';
 import { GoodType } from '../../types/good-type.enum.js';
 import {UserEntity} from '../user/user.entity.js';
 import {LocationEntity} from '../location/location.entity.js';
+import { RATING_DEFAULT } from './offer.constant.js';
 
 const {prop, modelOptions} = typegoose;
 
@@ -42,7 +43,10 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   @prop()
   public isFavorite!: boolean;
 
-  @prop()
+  @prop({
+    required: false,
+    default: RATING_DEFAULT,
+  })
   public rating!: number;
 
   @prop({
