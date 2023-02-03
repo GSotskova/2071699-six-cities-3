@@ -44,8 +44,11 @@ export default class OfferService implements OfferServiceInterface {
     return this.offerModel.findOne({title}).exec();
   }
 
-  public async find(count?: number): Promise<DocumentType<OfferEntity>[]> {
+  public async find(userAuthorization: boolean, count?: number): Promise<DocumentType<OfferEntity>[]> {
     const limit = count ?? DEFAULT_OFFER_COUNT;
+    if (!userAuthorization) {
+      await this.offerModel.updateMany({}, {$set: {isFavorite : false}}).exec();
+    }
     return this.offerModel
       .find({}, {}, {limit})
       .sort({postDate: SortType.Down})

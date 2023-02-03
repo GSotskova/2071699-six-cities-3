@@ -61,7 +61,6 @@ export default class CreateOfferDto {
   @IsEnum(GoodType, {each: true, message: 'goods must be an array'})
   public goods!: GoodType[];
 
-  @IsMongoId({message: 'userId field must be valid an id'})
   public userId!: string;
 
   @IsMongoId({message: 'locationId field must be valid an id'})
