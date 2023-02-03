@@ -19,6 +19,8 @@ import { ValidateObjectIdMiddleware } from '../../common/middlewares/validate-ob
 import { ValidateDtoMiddleware } from '../../common/middlewares/validate-dto.middleware.js';
 import { DocumentExistsMiddleware } from '../../common/middlewares/document-exists.middleware.js';
 import {PrivateRouteMiddleware} from '../../common/middlewares/private-route.middleware.js';
+import { FavoriteServiceInterface } from '../favorite/favorite-service.interface.js';
+import FavoriteResponse from '../favorite/response/favorite.response.js';
 
 type ParamsGetOffer = {
   offerId: string;
@@ -33,7 +35,8 @@ export default class OfferController extends Controller {
   constructor(
     @inject(Component.LoggerInterface) logger: LoggerInterface,
     @inject(Component.OfferServiceInterface) private readonly offerService: OfferServiceInterface,
-    @inject(Component.CommentServiceInterface) private readonly commentService: CommentServiceInterface
+    @inject(Component.CommentServiceInterface) private readonly commentService: CommentServiceInterface,
+    @inject(Component.FavoriteServiceInterface) private readonly favoriteService: FavoriteServiceInterface
   ) {
     super(logger);
     this.logger.info('Register routes for OfferController...');
@@ -48,7 +51,7 @@ export default class OfferController extends Controller {
         new ValidateDtoMiddleware(CreateOfferDto)
       ]
     });
-    this.addRoute({path: '/favorite', method: HttpMethod.Get, handler: this.showFavotite});
+    this.addRoute({path: '/favorite', method: HttpMethod.Get, handler: this.showFavorite});
     this.addRoute({
       path: '/:offerId',
       method: HttpMethod.Get,
@@ -107,7 +110,7 @@ export default class OfferController extends Controller {
     res: Response
   ): Promise<void> {
     const {query, user} = req;
-    const offers = await this.offerService.find(!!user.id, query.limit);
+    const offers = await this.offerService.find(user?.id, query?.limit);
     this.ok(res, fillDTO(OfferResponse, offers));
   }
 
@@ -166,7 +169,7 @@ export default class OfferController extends Controller {
   }
 
 
-  public async showFavotite (_req: Request, res: Response): Promise<void> {
+  public async showFavorite (_req: Request, res: Response): Promise<void> {
     const offers = await this.offerService.findFavorite();
     if (!offers) {
       throw new HttpError(
@@ -180,12 +183,23 @@ export default class OfferController extends Controller {
   }
 
   public async setStatusFavotite(
-    {params}: Request<core.ParamsDictionary | ParamsGetOffer>,
+    req: Request<core.ParamsDictionary | ParamsGetOffer, Record<string, unknown>, CreateOfferDto>,
     res: Response
   ): Promise<void> {
-    const {offerId} = params;
-    const offer = await this.offerService.editStatusFavorite(offerId);
-    this.ok(res, fillDTO(OfferResponse, offer));
+    const {params, user} = req;
+    const offerCheck = await this.favoriteService.find(user.id, params.offerId);
+    if (!offerCheck) {
+      const favorite = await this.favoriteService.create({userId: user.id, offerId: params.offerId});
+      await this.offerService.editStatusFavorite(params.offerId);
+      console.log(favorite);
+      this.created(res, fillDTO(FavoriteResponse, favorite));
+    }
+    else {
+      const favorite = await this.favoriteService.deleteById(user.id, params.offerId);
+      await this.offerService.editStatusFavorite(params.offerId);
+      this.noContent(res, favorite);
+    }
+
   }
 
   public async getComments(

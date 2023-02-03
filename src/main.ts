@@ -7,13 +7,15 @@ import {userContainer} from './modules/user/user.container.js';
 import {locationContainer} from './modules/location/location.container.js';
 import {offerContainer} from './modules/offer/offer.container.js';
 import {commentContainer} from './modules/comment/comment.container.js';
+import { favoriteContainer } from './modules/favorite/favorite.container.js';
 
 const mainContainer = Container.merge(
   applicationContainer,
   userContainer,
   locationContainer,
   offerContainer,
-  commentContainer
+  commentContainer,
+  favoriteContainer
 );
 
 async function bootstrap() {

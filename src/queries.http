@@ -81,7 +81,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRvcmFuczQ4QG92ZXJsb29rL
 ## Получить список предложений по аренде (5.4)
 GET http://localhost:4000/offers?limit=4 HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRvcmFuczQ4QG92ZXJsb29rLm5ldCIsImlkIjoiNjNkNzc4MWQ2MDUwMTVkZGMwOGZjYWMzIiwiaWF0IjoxNjc1NDA2MTgzLCJleHAiOjE2NzU1Nzg5ODN9.fIEQfjuOCL74ByO_AlKjx4ceL4MVkVWn_0AZaTcZnjE
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InVzZXI0QG1haWwuY29tIiwiaWQiOiI2M2Q3NzQwMWEwM2I2NjRjZjNlMTA1NjciLCJpYXQiOjE2NzU0NTIyODksImV4cCI6MTY3NTYyNTA4OX0.RgBgsLhgjBjcY3dEuA4w0xS_vivDDDxTbrbQPNnN4GQ
 
 ###
 
@@ -118,7 +118,7 @@ GET http://localhost:4000/offers/favorite HTTP/1.1
 ## Добавление и удаление предложения в/из избранного (5.14)
 PATCH http://localhost:4000/offers/favorite/63d77401a03b664cf3e1055d HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRvcmFuczQ4QG92ZXJsb29rLm5ldCIsImlkIjoiNjNkNzc4MWQ2MDUwMTVkZGMwOGZjYWMzIiwiaWF0IjoxNjc1NDA2MTgzLCJleHAiOjE2NzU1Nzg5ODN9.fIEQfjuOCL74ByO_AlKjx4ceL4MVkVWn_0AZaTcZnjE
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InVzZXI0QG1haWwuY29tIiwiaWQiOiI2M2Q3NzQwMWEwM2I2NjRjZjNlMTA1NjciLCJpYXQiOjE2NzU0NTIyODksImV4cCI6MTY3NTYyNTA4OX0.RgBgsLhgjBjcY3dEuA4w0xS_vivDDDxTbrbQPNnN4GQ
 
 ###
 

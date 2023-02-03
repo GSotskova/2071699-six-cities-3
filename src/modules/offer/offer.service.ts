@@ -1,7 +1,7 @@
 import {inject, injectable} from 'inversify';
 import {OfferServiceInterface} from './offer-service.interface.js';
 import CreateOfferDto from './dto/create-offer.dto.js';
-import {DocumentType, types} from '@typegoose/typegoose';
+import {DocumentType, mongoose, types} from '@typegoose/typegoose';
 import {OfferEntity} from './offer.entity.js';
 import {Component} from '../../types/component.types.js';
 import {LoggerInterface} from '../../common/logger/logger.interface.js';
@@ -44,15 +44,47 @@ export default class OfferService implements OfferServiceInterface {
     return this.offerModel.findOne({title}).exec();
   }
 
-  public async find(userAuthorization: boolean, count?: number): Promise<DocumentType<OfferEntity>[]> {
-    const limit = count ?? DEFAULT_OFFER_COUNT;
-    if (!userAuthorization) {
-      await this.offerModel.updateMany({}, {$set: {isFavorite : false}}).exec();
-    }
+  public async find(userAuthorization?: string, count?: number): Promise<DocumentType<OfferEntity>[]> {
+    const limitNumber = count ?? DEFAULT_OFFER_COUNT;
+    //const userCurrent = userAuthorization ?? ' ';
     return this.offerModel
-      .find({}, {}, {limit})
-      .sort({postDate: SortType.Down})
-      .populate(['userId', 'locationId'])
+      .aggregate([
+        {
+          $lookup: {
+            from: 'favorites',
+            localField: '_id',
+            foreignField: 'offerId',
+            pipeline: [
+              { $match: { $expr: { $eq: ['$userId', new mongoose.Types.ObjectId(userAuthorization) ] } } },
+            ],
+            as: 'result'
+          },
+        },
+        { $addFields: { isFavorite: { $eq: [{ $size: '$result'}, 1]} }},
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'userId',
+            foreignField: '_id',
+            as: 'user'
+          },
+        },
+        { $addFields: { userId: '$user'}},
+        {
+          $lookup: {
+            from: 'locations',
+            localField: 'locationId',
+            foreignField: '_id',
+            pipeline: [
+              { $project: { _id: 0, latitude: 1, longitude: 1}}
+            ],
+            as: 'location'
+          },
+        },
+        { $addFields: { locationId: '$location'}},
+        { $limit: +limitNumber },
+        { $sort: { postDate: SortType.Down } }
+      ])
       .exec();
   }
 
@@ -122,13 +154,15 @@ export default class OfferService implements OfferServiceInterface {
   public async editStatusFavorite(offerId: string): Promise<DocumentType<OfferEntity> | null> {
     const currentOffer = await this.offerModel.findById(offerId);
     return this.offerModel
-      .findByIdAndUpdate(offerId,{ $set: {
-        isFavorite: !currentOffer?.isFavorite,
-      }}).exec();
+      .findByIdAndUpdate(offerId,{
+        '$set': {isFavorite: !currentOffer?.isFavorite,}
+      }).exec();
   }
 
   public async exists(documentId: string): Promise<boolean> {
     return (await this.offerModel
       .exists({_id: documentId})) !== null;
   }
+
+
 }
