@@ -31,7 +31,7 @@ export default class UpdateOfferDto {
   @ArrayMinSize(6)
   @ArrayMaxSize(6)
   @IsArray({message: 'Field image must be an array'})
-  public image?: string;
+  public image?: string[];
 
   @IsOptional()
   @IsEnum(CityType, {message: `city must be one of ${CITIES_LIST}`})
@@ -39,7 +39,7 @@ export default class UpdateOfferDto {
 
   @IsOptional()
   @MaxLength(256, {message: 'Too short for field «image»'})
-  public prevImg?: string[];
+  public prevImg?: string;
 
   @IsOptional()
   @IsBoolean( {message: 'isPremium must be true or false'})

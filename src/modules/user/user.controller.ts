@@ -1,4 +1,3 @@
-import * as core from 'express-serve-static-core';
 import {Controller} from '../../common/controller/controller.js';
 import {inject, injectable} from 'inversify';
 import {Component} from '../../types/component.types.js';
@@ -18,20 +17,17 @@ import {ValidateObjectIdMiddleware} from '../../common/middlewares/validate-obje
 import {UploadFileMiddleware} from '../../common/middlewares/upload-file.middleware.js';
 import { DocumentExistsMiddleware } from '../../common/middlewares/document-exists.middleware.js';
 import LoggedUserResponse from './response/logged-user.response.js';
-import UpdateUserDto from './dto/update-user.dto.js';
+import UploadUserAvatarResponse from './response/upload-user-avatar.response.js';
 
-type ParamsGetUser = {
-  userId: string;
-}
 
 @injectable()
 export default class UserController extends Controller {
   constructor(
     @inject(Component.LoggerInterface) logger: LoggerInterface,
+    @inject(Component.ConfigInterface) configService: ConfigInterface,
     @inject(Component.UserServiceInterface) private readonly userService: UserServiceInterface,
-    @inject(Component.ConfigInterface) private readonly configService: ConfigInterface,
   ) {
-    super(logger);
+    super(logger, configService);
     this.logger.info('Register routes for UserController...');
 
     this.addRoute({
@@ -47,7 +43,15 @@ export default class UserController extends Controller {
       middlewares: [new ValidateDtoMiddleware(LoginUserDto)]
     });
     this.addRoute({path: '/login', method: HttpMethod.Get, handler: this.check});
-    this.addRoute({path: '/logout', method: HttpMethod.Delete, handler: this.logout});
+    this.addRoute({
+      path: '/:userId/logout',
+      method: HttpMethod.Delete,
+      handler: this.logout,
+      middlewares: [
+        new ValidateObjectIdMiddleware('userId'),
+        new DocumentExistsMiddleware(this.userService, 'User', 'userId')
+      ]
+    });
     this.addRoute({
       path: '/:userId/avatar',
       method: HttpMethod.Post,
@@ -101,16 +105,18 @@ export default class UserController extends Controller {
       this.configService.get('JWT_SECRET'),
       { email: user.email, id: user.id}
     );
-    this.ok(res, fillDTO(LoggedUserResponse, {email: user.email, token}));
+    this.ok(res, {
+      ...fillDTO(LoggedUserResponse, user),
+      token
+    });
   }
 
-  public async logout(_req: Request,_res: Response,): Promise<void> {
-
-    throw new HttpError(
-      StatusCodes.NOT_IMPLEMENTED,
-      'Not implemented',
-      'UserController',
-    );
+  public async logout(req: Request,res: Response,): Promise<void> {
+    const {userId} = req.params;
+    const user = await this.userService.findByUserId(userId);
+    if (!user) {
+      this.noContent(res, user);
+    }
   }
 
   public async check(req: Request,res: Response,): Promise<void> {
@@ -128,16 +134,10 @@ export default class UserController extends Controller {
 
   }
 
-  public async uploadAvatar(
-    req: Request<core.ParamsDictionary | ParamsGetUser, Record<string, unknown>, UpdateUserDto>,
-    res: Response
-  ) {
-    const result = await this.userService.updateById(req.params.userId, {avatarPath: req.file?.path});
-    this.send(
-      res,
-      StatusCodes.CREATED,
-      fillDTO(UserResponse, result)
-    );
-
+  public async uploadAvatar(req: Request, res: Response) {
+    const {userId} = req.params;
+    const uploaFile = {avatarPath: req.file?.filename};
+    await this.userService.updateById(userId, uploaFile);
+    this.created(res, fillDTO(UploadUserAvatarResponse, uploaFile));
   }
 }

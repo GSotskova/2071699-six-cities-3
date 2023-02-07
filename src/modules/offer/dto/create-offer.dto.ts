@@ -1,7 +1,7 @@
 import {CityType} from '../../../types//city-type.enum.js';
 import {HomeType} from '../../../types/home-type.enum.js';
 import {GoodType} from '../../../types/good-type.enum.js';
-import {IsArray, IsDateString, IsEnum, IsInt, IsMongoId, Max, MaxLength, Min, MinLength, ArrayMaxSize, ArrayMinSize, IsBoolean} from 'class-validator';
+import {IsArray, IsDateString, IsEnum, IsInt, IsMongoId, Max, MaxLength, Min, MinLength, ArrayMinSize, IsBoolean} from 'class-validator';
 import {CITIES_LIST} from '../offer.constant.js';
 
 export default class CreateOfferDto {
@@ -18,14 +18,6 @@ export default class CreateOfferDto {
 
   @IsEnum(CityType, {message: `city must be one of ${CITIES_LIST}`})
   public city!: CityType;
-
-  @MaxLength(256, {message: 'Too short for field «image»'})
-  public prevImg!: string;
-
-  @ArrayMinSize(6)
-  @ArrayMaxSize(6)
-  @IsArray({message: 'Field image must be an array'})
-  public image!: string[];
 
   @IsBoolean( {message: 'isPremium must be true or false'})
   public isPremium!: boolean;
