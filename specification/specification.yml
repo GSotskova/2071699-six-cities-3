@@ -16,7 +16,7 @@ tags:
     description: Действия с пользователем.
 
 paths:
-  /offers/create:
+  /create:
     post:
       tags:
         - offers
@@ -108,7 +108,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/offer'
-  /offers:
+  /:
       get:
         tags:
           - offers
@@ -122,7 +122,7 @@ paths:
                 schema:
                   $ref: '#/components/schemas/offers'
 
-  /offers/premium/{city}:
+  /premium?city={city}:
       get:
         tags:
           - offers
@@ -142,7 +142,7 @@ paths:
           "404":
             description: Список премиальных предложений для города не получен
 
-  /offers/favorite:
+  /favorite:
       get:
         tags:
           - offers
@@ -163,7 +163,7 @@ paths:
           "404":
             description: Список избранных предложений не получен
 
-  /offers/favorite/{offerId}:
+  /favorite/{offerId}:
       patch:
         tags:
           - offers
@@ -185,7 +185,7 @@ paths:
             description: Статус предложения изменен
           "400":
             description: Статус предложения не изменен
-  /comments:
+  /offers/{offerId}/comments:
       get:
         tags:
           - comments
@@ -200,7 +200,7 @@ paths:
                   $ref: '#/components/schemas/comments'
           "400":
             description: Список комментариев не получен
-  /comment:
+  /comments:
         post:
           tags:
             - comments

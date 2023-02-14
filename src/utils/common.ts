@@ -5,7 +5,7 @@ import {ValidationError} from 'class-validator';
 import { Offer } from '../types/offer.type.js';
 import { CityType } from '../types/city-type.enum.js';
 import { HomeType } from '../types/home-type.enum.js';
-import { UserType } from '../types/user-type.enum.js';
+import { UserTypeServer } from '../types/user-type.enum.js';
 import { GoodType } from '../types/good-type.enum.js';
 import {ValidationErrorField} from '../types/validation-error-field.type.js';
 import {ServiceError} from '../types/service-error.enum.js';
@@ -51,7 +51,7 @@ export const createOffer = (row: string) => {
     guests: Number.parseInt(guests,10),
     price: Number.parseInt(price, 10),
     goods: goods.split(';').map((good) => good as GoodType),
-    user: {name, email, avatarPath, userType: UserType[userType as 'Standart' | 'Pro']},
+    user: {name, email, avatarPath, userType: UserTypeServer[userType as 'Standart' | 'Pro']},
     location: {latitude: Number.parseFloat(latitude), longitude: Number.parseFloat(longitude)}
   } as Offer;
 };

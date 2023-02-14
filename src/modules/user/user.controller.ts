@@ -18,6 +18,7 @@ import {UploadFileMiddleware} from '../../common/middlewares/upload-file.middlew
 import { DocumentExistsMiddleware } from '../../common/middlewares/document-exists.middleware.js';
 import LoggedUserResponse from './response/logged-user.response.js';
 import UploadUserAvatarResponse from './response/upload-user-avatar.response.js';
+import { OfferServiceInterface } from '../offer/offer-service.interface.js';
 
 
 @injectable()
@@ -26,6 +27,7 @@ export default class UserController extends Controller {
     @inject(Component.LoggerInterface) logger: LoggerInterface,
     @inject(Component.ConfigInterface) configService: ConfigInterface,
     @inject(Component.UserServiceInterface) private readonly userService: UserServiceInterface,
+    @inject(Component.OfferServiceInterface) private readonly offerService: OfferServiceInterface,
   ) {
     super(logger, configService);
     this.logger.info('Register routes for UserController...');
@@ -44,13 +46,9 @@ export default class UserController extends Controller {
     });
     this.addRoute({path: '/login', method: HttpMethod.Get, handler: this.check});
     this.addRoute({
-      path: '/:userId/logout',
+      path: '/logout',
       method: HttpMethod.Delete,
-      handler: this.logout,
-      middlewares: [
-        new ValidateObjectIdMiddleware('userId'),
-        new DocumentExistsMiddleware(this.userService, 'User', 'userId')
-      ]
+      handler: this.logout
     });
     this.addRoute({
       path: '/:userId/avatar',
@@ -91,7 +89,6 @@ export default class UserController extends Controller {
     res: Response,
   ): Promise<void> {
     const user = await this.userService.verifyUser(body, this.configService.get('SALT'));
-
     if (!user) {
       throw new HttpError(
         StatusCodes.UNAUTHORIZED,
@@ -99,12 +96,14 @@ export default class UserController extends Controller {
         'UserController'
       );
     }
+    await this.offerService.updateFavorites(user.id);
 
     const token = await createJWT(
       this.configService.get('JWT_ALGORITM'),
       this.configService.get('JWT_SECRET'),
       { email: user.email, id: user.id}
     );
+
     this.ok(res, {
       ...fillDTO(LoggedUserResponse, user),
       token
@@ -112,11 +111,18 @@ export default class UserController extends Controller {
   }
 
   public async logout(req: Request,res: Response,): Promise<void> {
-    const {userId} = req.params;
-    const user = await this.userService.findByUserId(userId);
+
+    const user = await this.userService.findByEmail(req.user.email);
+
     if (!user) {
-      this.noContent(res, user);
+      throw new HttpError(
+        StatusCodes.CONFLICT,
+        `User with email ${req.body.email} not exists.`,
+        'UserController'
+      );
     }
+    this.ok(res, fillDTO(LoggedUserResponse, user));
+
   }
 
   public async check(req: Request,res: Response,): Promise<void> {
@@ -126,7 +132,7 @@ export default class UserController extends Controller {
     if (!user) {
       throw new HttpError(
         StatusCodes.CONFLICT,
-        `User with email ${req.body.email} exists.`,
+        `User with email ${req.body.email} not exists.`,
         'UserController'
       );
     }

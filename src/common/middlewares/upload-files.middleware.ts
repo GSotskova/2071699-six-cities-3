@@ -3,6 +3,7 @@ import {nanoid} from 'nanoid';
 import multer, {diskStorage} from 'multer';
 import mime from 'mime-types';
 import {MiddlewareInterface} from '../../types/middleware.interface.js';
+import { IMAGES_OFFER_COUNT } from '../../modules/offer/offer.constant.js';
 
 export class UploadFilesMiddleware implements MiddlewareInterface {
   constructor(
@@ -20,8 +21,7 @@ export class UploadFilesMiddleware implements MiddlewareInterface {
       }
     });
 
-    const uploadSingleFilesMiddleware = multer({storage}).array(this.fieldName, 6);
-
+    const uploadSingleFilesMiddleware = multer({storage}).array(this.fieldName, IMAGES_OFFER_COUNT);
     uploadSingleFilesMiddleware(req, res, next);
   }
 }

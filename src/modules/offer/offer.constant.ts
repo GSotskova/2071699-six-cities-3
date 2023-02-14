@@ -7,4 +7,6 @@ const CITY_ARRAY = [CityType.Amsterdam, CityType.Brussels, CityType.Cologne, Cit
 export const CITIES_LIST = CITY_ARRAY.join(', ');
 
 
-export const RATING_DEFAULT = 1;
+export const RATING_DEFAULT = 0;
+
+export const IMAGES_OFFER_COUNT = 6;

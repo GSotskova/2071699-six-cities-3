@@ -1,7 +1,7 @@
 import {inject, injectable} from 'inversify';
 import {OfferServiceInterface} from './offer-service.interface.js';
 import CreateOfferDto from './dto/create-offer.dto.js';
-import {DocumentType, mongoose, types} from '@typegoose/typegoose';
+import {DocumentType, /*mongoose,*/ types} from '@typegoose/typegoose';
 import {OfferEntity} from './offer.entity.js';
 import {Component} from '../../types/component.types.js';
 import {LoggerInterface} from '../../common/logger/logger.interface.js';
@@ -11,20 +11,24 @@ import {SortType} from '../../types/sort-type.enum.js';
 import { LocationServiceInterface } from '../location/location-service.interface.js';
 import LocationService from '../../modules/location/location.service.js';
 import {LocationModel} from '../../modules/location/location.entity.js';
+import { FavoriteModel } from '../favorite/favorite.entity.js';
+import { FavoriteServiceInterface } from '../favorite/favorite-service.interface.js';
+import FavoriteService from '../favorite/favorite.service.js';
 
 @injectable()
 export default class OfferService implements OfferServiceInterface {
   private locationService!: LocationServiceInterface;
+  private favoriteService!: FavoriteServiceInterface;
   constructor(
     @inject(Component.LoggerInterface) private readonly logger: LoggerInterface,
     @inject(Component.OfferModel) private readonly offerModel: types.ModelType<OfferEntity>,
   ) {
     this.locationService = new LocationService(this.logger, LocationModel);
+    this.favoriteService = new FavoriteService(this.logger, FavoriteModel);
   }
 
   public async create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>> {
     const location = await this.locationService.findIdByCity(dto.city);
-
     const result = await this.offerModel.create({...dto, locationId: location});
 
     this.logger.info(`New offer created: ${dto.title}`);
@@ -44,47 +48,37 @@ export default class OfferService implements OfferServiceInterface {
     return this.offerModel.findOne({title}).exec();
   }
 
-  public async find(userAuthorization?: string, count?: number): Promise<DocumentType<OfferEntity>[]> {
-    const limitNumber = count ?? DEFAULT_OFFER_COUNT;
-    //const userCurrent = userAuthorization ?? ' ';
+  public async updateFavorite(offerId: string): Promise<DocumentType<OfferEntity> | null> {
     return this.offerModel
-      .aggregate([
-        {
-          $lookup: {
-            from: 'favorites',
-            localField: '_id',
-            foreignField: 'offerId',
-            pipeline: [
-              { $match: { $expr: { $eq: ['$userId', new mongoose.Types.ObjectId(userAuthorization) ] } } },
-            ],
-            as: 'result'
-          },
-        },
-        { $addFields: { isFavorite: { $eq: [{ $size: '$result'}, 1]} }},
-        {
-          $lookup: {
-            from: 'users',
-            localField: 'userId',
-            foreignField: '_id',
-            as: 'user'
-          },
-        },
-        { $addFields: { userId: '$user'}},
-        {
-          $lookup: {
-            from: 'locations',
-            localField: 'locationId',
-            foreignField: '_id',
-            pipeline: [
-              { $project: { _id: 0, latitude: 1, longitude: 1}}
-            ],
-            as: 'location'
-          },
-        },
-        { $addFields: { locationId: '$location'}},
-        { $limit: +limitNumber },
-        { $sort: { postDate: SortType.Down } }
-      ])
+      .findByIdAndUpdate(offerId,{
+        '$set': {isFavorite: true,}
+      }).exec();
+  }
+
+  public async updateFavorites(userAuthorization: string): Promise<DocumentType<OfferEntity>[]> {
+
+    await this.offerModel.updateMany({ $set: {isFavorite: false}}).exec();
+
+    const favoritesUserCurrent = await this.favoriteService.findByUserId(userAuthorization);
+    if (!favoritesUserCurrent) {
+      return [];
+    }
+
+    favoritesUserCurrent.forEach((favorite) => favorite.offerId ? this.updateFavorite( favorite.offerId.toString()) : null);
+
+    return await this.offerModel.find().populate(['userId', 'locationId']).exec();
+  }
+
+
+  public async find(userAuthorization?: string, count?: number): Promise<DocumentType<OfferEntity>[]> {
+    if (!userAuthorization) {
+      await this.offerModel.updateMany({ $set: {isFavorite: false}}).exec();
+    }
+    const limit = count ?? DEFAULT_OFFER_COUNT;
+    return this.offerModel
+      .find({}, {}, {limit})
+      .sort({postDate: SortType.Down})
+      .populate(['userId', 'locationId'])
       .exec();
   }
 

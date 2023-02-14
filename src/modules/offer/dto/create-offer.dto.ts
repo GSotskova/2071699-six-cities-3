@@ -1,7 +1,7 @@
 import {CityType} from '../../../types//city-type.enum.js';
 import {HomeType} from '../../../types/home-type.enum.js';
 import {GoodType} from '../../../types/good-type.enum.js';
-import {IsArray, IsDateString, IsEnum, IsInt, IsMongoId, Max, MaxLength, Min, MinLength, ArrayMinSize, IsBoolean} from 'class-validator';
+import {IsArray, IsDateString, IsEnum, IsInt, Max, MaxLength, Min, MinLength, ArrayMinSize, IsBoolean} from 'class-validator';
 import {CITIES_LIST} from '../offer.constant.js';
 
 export default class CreateOfferDto {
@@ -26,8 +26,6 @@ export default class CreateOfferDto {
   public isFavorite!: boolean;
 
   @IsInt({message: 'Rating must be an integer'})
-  @Min(1, {message: 'Minimum rating is 1'})
-  @Max(5, {message: 'Maximum rating is 5'})
   public rating!: number;
 
   @IsEnum(HomeType, {message: 'type must be one of apartment, house, room, hotel'})
@@ -55,7 +53,7 @@ export default class CreateOfferDto {
 
   public userId!: string;
 
-  @IsMongoId({message: 'locationId field must be valid an id'})
   public locationId!: string;
+
 }
 

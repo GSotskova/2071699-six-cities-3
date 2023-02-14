@@ -1,5 +1,5 @@
 import {User} from '../../types/user.type.js';
-import { UserType } from '../../types/user-type.enum.js';
+import { UserTypeServer } from '../../types/user-type.enum.js';
 import typegoose, {getModelForClass, defaultClasses} from '@typegoose/typegoose';
 import {createSHA256} from '../../utils/common.js';
 
@@ -33,9 +33,9 @@ export class UserEntity extends defaultClasses.TimeStamps implements User {
 
   @prop({
     type: () => String,
-    enum: UserType
+    enum: UserTypeServer
   })
-  public userType!: UserType;
+  public userType!: UserTypeServer;
 
   @prop({required: true, default: ''})
   private password!: string;

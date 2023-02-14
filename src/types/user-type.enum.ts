@@ -1,4 +1,4 @@
-export enum UserType {
+export enum UserTypeServer {
   Standart = 'standart',
   Pro = 'pro',
 }

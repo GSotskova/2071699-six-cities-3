@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { MockData } from '../../types/mock-data.type.js';
 import { HomeType } from '../../types/home-type.enum.js';
 import { GoodType } from '../../types/good-type.enum.js';
-import { UserType } from '../../types/user-type.enum.js';
+import { UserTypeServer } from '../../types/user-type.enum.js';
 import { generateRandomValue, getRandomItem, getRandomItems } from '../../utils/random.js';
 import { OfferGeneratorInterface } from './offer-generator.interface.js';
 
@@ -41,7 +41,7 @@ export default class OfferGenerator implements OfferGeneratorInterface {
     const name = getRandomItem<string>(this.mockData.users);
     const email = getRandomItem<string>(this.mockData.emails);
     const avatar = getRandomItem<string>(this.mockData.avatars);
-    const userType = getRandomItem(Object.keys(UserType));
+    const userType = getRandomItem(Object.keys(UserTypeServer));
     const location = getRandomItem<string>(this.mockData.locations);
 
     const [city, latitude, longitude] = location.split(' ');

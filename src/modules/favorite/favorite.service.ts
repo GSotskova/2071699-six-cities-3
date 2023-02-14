@@ -6,7 +6,6 @@ import {LoggerInterface} from '../../common/logger/logger.interface.js';
 import {FavoriteEntity} from './favorite.entity.js';
 import CreateFavoriteDto from './dto/create-favorite.dto.js';
 
-
 @injectable()
 export default class FavoriteService implements FavoriteServiceInterface {
   constructor(
@@ -20,8 +19,8 @@ export default class FavoriteService implements FavoriteServiceInterface {
     return result.populate(['userId', 'offerId']);
   }
 
-  public async findByUserId(userId: string): Promise<DocumentType<FavoriteEntity> | null> {
-    return this.favoriteModel.findById(userId).exec();
+  public async findByUserId(userId: string): Promise<DocumentType<FavoriteEntity>[]> {
+    return this.favoriteModel.find({userId: userId}).exec();
   }
 
   public async findByOfferId(offerId: string): Promise<DocumentType<FavoriteEntity> | null> {

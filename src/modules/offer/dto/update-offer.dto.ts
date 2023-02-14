@@ -28,9 +28,9 @@ export default class UpdateOfferDto {
   public postDate?: Date;
 
   @IsOptional()
+  @IsArray({message: 'Field image must be an array'})
   @ArrayMinSize(6)
   @ArrayMaxSize(6)
-  @IsArray({message: 'Field image must be an array'})
   public image?: string[];
 
   @IsOptional()
@@ -47,7 +47,5 @@ export default class UpdateOfferDto {
 
   @IsOptional()
   @IsInt({message: 'Rating must be an integer'})
-  @Min(1, {message: 'Minimum rating is 1'})
-  @Max(5, {message: 'Maximum rating is 5'})
   public rating?: number;
 }

@@ -28,8 +28,8 @@ export default class Application {
 
   public initRoutes() {
     this.expressApp.use('/users', this.userController.router);
-    this.expressApp.use('/offers', this.offerController.router);
-    this.expressApp.use('/comments', this.commentController.router);
+    this.expressApp.use('/', this.offerController.router);
+    this.expressApp.use('/', this.commentController.router);
   }
 
   public initMiddleware() {
@@ -42,9 +42,9 @@ export default class Application {
       '/static',
       express.static(this.config.get('STATIC_DIRECTORY_PATH'))
     );
+    this.expressApp.use(cors());
     const authenticateMiddleware = new AuthenticateMiddleware(this.config.get('JWT_SECRET'));
     this.expressApp.use(authenticateMiddleware.execute.bind(authenticateMiddleware));
-    this.expressApp.use(cors());
   }
 
   public initExceptionFilters() {

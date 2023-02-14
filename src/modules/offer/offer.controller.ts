@@ -12,7 +12,7 @@ import {StatusCodes} from 'http-status-codes';
 import {fillDTO} from '../../utils/common.js';
 import OfferResponse from './response/offer.response.js';
 import UpdateOfferDto from './dto/update-offer.dto.js';
-import {RequestQuery} from '../../types/request-query.type.js';
+import {RequestQuery, RequestQueryPremium} from '../../types/request-query.type.js';
 import { CommentServiceInterface } from '../comment/comment-service.interface.js';
 import CommentResponse from '../comment/response/comment.response.js';
 import { ValidateObjectIdMiddleware } from '../../common/middlewares/validate-objectid.middleware.js';
@@ -31,10 +31,6 @@ type ParamsGetOffer = {
   offerId: string;
 }
 
-type ParamsGetPremium = {
-  cityName: string;
-}
-
 @injectable()
 export default class OfferController extends Controller {
   constructor(
@@ -49,7 +45,7 @@ export default class OfferController extends Controller {
 
     this.addRoute({path: '/', method: HttpMethod.Get, handler: this.index});
     this.addRoute({
-      path: '/create',
+      path: '/offers/create',
       method: HttpMethod.Post,
       handler: this.create,
       middlewares: [
@@ -65,7 +61,7 @@ export default class OfferController extends Controller {
         new PrivateRouteMiddleware()]
     });
     this.addRoute({
-      path: '/:offerId',
+      path: '/offers/:offerId',
       method: HttpMethod.Get,
       handler: this.show,
       middlewares: [
@@ -76,7 +72,7 @@ export default class OfferController extends Controller {
     });
     this.addRoute({
       path: '/favorite/:offerId',
-      method: HttpMethod.Patch,
+      method: HttpMethod.Post,
       handler: this.setStatusFavotite,
       middlewares: [
         new PrivateRouteMiddleware(),
@@ -84,9 +80,19 @@ export default class OfferController extends Controller {
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
       ]
     });
-    this.addRoute({path: '/premium/:cityName', method: HttpMethod.Get, handler: this.showPremium});
     this.addRoute({
-      path: '/:offerId',
+      path: '/favorite/:offerId',
+      method: HttpMethod.Delete,
+      handler: this.deleteStatusFavotite,
+      middlewares: [
+        new PrivateRouteMiddleware(),
+        new ValidateObjectIdMiddleware('offerId'),
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+      ]
+    });
+    this.addRoute({path: '/premium', method: HttpMethod.Get, handler: this.showPremium});
+    this.addRoute({
+      path: '/offers/:offerId',
       method: HttpMethod.Patch,
       handler: this.update,
       middlewares: [
@@ -97,7 +103,7 @@ export default class OfferController extends Controller {
       ]
     });
     this.addRoute({
-      path: '/:offerId',
+      path: '/offers/:offerId',
       method: HttpMethod.Delete,
       handler: this.delete,
       middlewares: [
@@ -107,7 +113,7 @@ export default class OfferController extends Controller {
       ]
     });
     this.addRoute({
-      path: '/:offerId/comments',
+      path: '/offers/:offerId/comments',
       method: HttpMethod.Get,
       handler: this.getComments,
       middlewares: [
@@ -116,7 +122,7 @@ export default class OfferController extends Controller {
       ]
     });
     this.addRoute({
-      path: '/:offerId/previewimage',
+      path: '/offers/:offerId/previewimage',
       method: HttpMethod.Post,
       handler: this.uploadPrevImage,
       middlewares: [
@@ -126,7 +132,7 @@ export default class OfferController extends Controller {
       ]
     });
     this.addRoute({
-      path: '/:offerId/images',
+      path: '/offers/:offerId/images',
       method: HttpMethod.Post,
       handler: this.uploadImages,
       middlewares: [
@@ -184,15 +190,16 @@ export default class OfferController extends Controller {
   }
 
   public async showPremium (
-    {params}: Request<core.ParamsDictionary | ParamsGetPremium>,
+    req: Request<Record<string, unknown>, unknown, unknown, RequestQueryPremium>,
     res: Response
   ): Promise<void> {
-    const {cityName} = params;
-    const offers = await this.offerService.findPremium(cityName);
+    const {query} = req;
+    const city = query.city ? query.city : ' ';
+    const offers = await this.offerService.findPremium(city);
     if (!offers) {
       throw new HttpError(
         StatusCodes.NOT_FOUND,
-        `Premium offer with city ${cityName} not found.`,
+        `Premium offer with city ${query.city} not found.`,
         'OfferController'
       );
     }
@@ -220,16 +227,36 @@ export default class OfferController extends Controller {
   ): Promise<void> {
     const {params, user} = req;
     const offerCheck = await this.favoriteService.find(user.id, params.offerId);
+    if (offerCheck) {
+      throw new HttpError(
+        StatusCodes.CONFLICT,
+        'Offer already added to Favorites',
+        'OfferController'
+      );
+    }
+    const favorite = await this.favoriteService.create({userId: user.id, offerId: params.offerId});
+    await this.offerService.editStatusFavorite(params.offerId);
+    this.created(res, fillDTO(FavoriteResponse, favorite));
+
+  }
+
+  public async deleteStatusFavotite(
+    req: Request<core.ParamsDictionary | ParamsGetOffer, Record<string, unknown>, CreateOfferDto>,
+    res: Response
+  ): Promise<void> {
+    const {params, user} = req;
+    const offerCheck = await this.favoriteService.find(user.id, params.offerId);
     if (!offerCheck) {
-      const favorite = await this.favoriteService.create({userId: user.id, offerId: params.offerId});
-      await this.offerService.editStatusFavorite(params.offerId);
-      this.created(res, fillDTO(FavoriteResponse, favorite));
+      throw new HttpError(
+        StatusCodes.CONFLICT,
+        'Offer not found in Favorites',
+        'OfferController'
+      );
     }
-    else {
-      const favorite = await this.favoriteService.deleteById(user.id, params.offerId);
-      await this.offerService.editStatusFavorite(params.offerId);
-      this.noContent(res, favorite);
-    }
+    const favorite = await this.favoriteService.deleteById(user.id, params.offerId);
+    await this.offerService.editStatusFavorite(params.offerId);
+    this.noContent(res, favorite);
+
 
   }
 
@@ -241,9 +268,11 @@ export default class OfferController extends Controller {
     this.ok(res, fillDTO(CommentResponse, comments));
   }
 
-  public async uploadPrevImage(req: Request<core.ParamsDictionary | ParamsGetOffer>, res: Response) {
+  public async uploadPrevImage(req: Request<core.ParamsDictionary | ParamsGetOffer >, res: Response) {
     const {offerId} = req.params;
     const updateDto = { prevImg: req.file?.filename };
+
+
     await this.offerService.updateById(offerId, updateDto);
     this.created(res, fillDTO(UploadImageResponse, updateDto));
   }
@@ -252,7 +281,9 @@ export default class OfferController extends Controller {
     const {offerId} = req.params;
     const fileArray = req.files as Array<Express.Multer.File>;
     const fileNames = fileArray.map((file) => file.filename);
+
     const updateDto = { image: fileNames};
+
     await this.offerService.updateById(offerId, updateDto);
     this.created(res, fillDTO(UploadImagesResponse, updateDto));
   }

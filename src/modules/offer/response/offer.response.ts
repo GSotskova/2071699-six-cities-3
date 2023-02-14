@@ -1,12 +1,16 @@
-import {Expose, Type} from 'class-transformer';
+import {Expose, Transform, Type} from 'class-transformer';
 import UserResponse from '../../user/response/user.response.js';
 import {CityType} from '../../../types/city-type.enum.js';
 import {HomeType} from '../../../types/home-type.enum.js';
 import {GoodType} from '../../../types/good-type.enum.js';
-import {LocationType} from '../../../types/location-type.js';
+import LocationResponse from '../../location/response/location.response.js';
 
 
 export default class OfferResponse {
+  @Expose({ name: '_id'})
+  @Transform((value) => value.obj._id.toString())
+  public id!: string;
+
   @Expose()
   public title!: string ;
 
@@ -21,6 +25,9 @@ export default class OfferResponse {
 
   @Expose()
   public prevImg!: string;
+
+  @Expose()
+  public image!: string[];
 
   @Expose()
   public isPremium!: boolean;
@@ -56,6 +63,7 @@ export default class OfferResponse {
   @Expose()
   public comments!: number;
 
-  @Expose()
-  public location!: LocationType;
+  @Expose({ name: 'locationId'})
+  @Type(() => LocationResponse)
+  public location!: LocationResponse;
 }

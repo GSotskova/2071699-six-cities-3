@@ -16,6 +16,7 @@ export interface OfferServiceInterface extends DocumentExistsInterface {
   findFavorite(): Promise<DocumentType<OfferEntity>[]>;
   editStatusFavorite(offerId: string): Promise<DocumentType<OfferEntity> | null>;
   updateRating(offerId: string): Promise<number | null >;
+  updateFavorites(userAuthorization: string): Promise<DocumentType<OfferEntity>[]>;
 
   exists(documentId: string): Promise<boolean>;
 }

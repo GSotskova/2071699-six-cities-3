@@ -1,5 +1,5 @@
-import {IsEmail, IsString, Length, IsEnum} from 'class-validator';
-import { UserType } from '../../../types/user-type.enum.js';
+import {IsEmail, IsEnum, IsString, Length} from 'class-validator';
+import { UserTypeServer } from '../../../types/user-type.enum.js';
 
 export default class CreateUserDto {
 
@@ -10,8 +10,8 @@ export default class CreateUserDto {
   @IsEmail({}, {message: 'email must be valid address'})
   public email!: string;
 
-  @IsEnum(UserType, {message: 'type must be one of pro or standart'})
-  public userType!: UserType;
+  @IsEnum(UserTypeServer, {message: 'type must be one of pro or standart888'})
+  public userType!: UserTypeServer;
 
   @IsString({message: 'password is required'})
   @Length(6, 12, {message: 'Min length for password is 6, max is 12'})
