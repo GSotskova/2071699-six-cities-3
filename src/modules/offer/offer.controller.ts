@@ -181,12 +181,13 @@ export default class OfferController extends Controller {
 
 
   public async delete(
-    {params}: Request<core.ParamsDictionary | ParamsGetOffer>,
+    req: Request<core.ParamsDictionary, unknown, unknown, RequestQuery>,
     res: Response
   ): Promise<void> {
-    const {offerId} = params;
-    const offer = await this.offerService.deleteById(offerId);
-    this.noContent(res, offer);
+    const {params, query, user} = req;
+    await this.offerService.deleteById(params.offerId);
+    const offers = await this.offerService.find(user?.id, query?.limit);
+    this.ok(res, fillDTO(OfferResponse, offers));
   }
 
   public async showPremium (
@@ -234,8 +235,8 @@ export default class OfferController extends Controller {
         'OfferController'
       );
     }
-    const favorite = await this.favoriteService.create({userId: user.id, offerId: params.offerId});
-    await this.offerService.editStatusFavorite(params.offerId);
+    await this.favoriteService.create({userId: user.id, offerId: params.offerId});
+    const favorite = await this.offerService.editStatusFavorite(params.offerId);
     this.created(res, fillDTO(FavoriteResponse, favorite));
 
   }
@@ -253,9 +254,9 @@ export default class OfferController extends Controller {
         'OfferController'
       );
     }
-    const favorite = await this.favoriteService.deleteById(user.id, params.offerId);
-    await this.offerService.editStatusFavorite(params.offerId);
-    this.noContent(res, favorite);
+    const favorite = await this.offerService.editStatusFavorite(params.offerId);
+    await this.favoriteService.deleteById(user.id, params.offerId);
+    this.ok(res, fillDTO(OfferResponse, favorite));
 
 
   }

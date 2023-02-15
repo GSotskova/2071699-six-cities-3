@@ -62,6 +62,11 @@ export abstract class Controller implements ControllerInterface {
     this.send(res, StatusCodes.NO_CONTENT, data);
   }
 
+  public noContentAndOk<T>(res: Response, data: T, result: T): void {
+    this.send(res, StatusCodes.NO_CONTENT, data);
+    this.send(res, StatusCodes.OK, result);
+  }
+
   public ok<T>(res: Response, data: T): void {
     this.send(res, StatusCodes.OK, data);
   }

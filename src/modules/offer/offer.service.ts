@@ -115,10 +115,8 @@ export default class OfferService implements OfferServiceInterface {
   }
 
 
-  public async deleteById(offerId: string): Promise<DocumentType<OfferEntity> | null> {
-    return this.offerModel
-      .findByIdAndDelete(offerId)
-      .exec();
+  public async deleteById(offerId: string): Promise<DocumentType<OfferEntity>| null> {
+    return this.offerModel.findByIdAndDelete(offerId).exec();
   }
 
   public async incCommentCount(offerId: string): Promise<DocumentType<OfferEntity> | null> {
@@ -150,7 +148,9 @@ export default class OfferService implements OfferServiceInterface {
     return this.offerModel
       .findByIdAndUpdate(offerId,{
         '$set': {isFavorite: !currentOffer?.isFavorite,}
-      }).exec();
+      }, {new: true})
+      .populate(['userId', 'locationId'])
+      .exec();
   }
 
   public async exists(documentId: string): Promise<boolean> {
