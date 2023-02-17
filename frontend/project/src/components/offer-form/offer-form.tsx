@@ -7,6 +7,9 @@ import { City, NewOffer, Offer } from '../../types/types';
 import LocationPicker from '../location-picker/location-picker';
 import { CITIES, CityLocation, GOODS, TYPES } from '../../const';
 import { capitalize } from '../../utils/utils';
+import { useAppDispatch, useAppSelector } from '../../hooks';
+import { getImagesFileArr } from '../../store/site-process/selectors';
+import { setImagesFileArr } from '../../store/site-process/site-process';
 
 enum FormFieldName {
   title = 'title',
@@ -55,6 +58,7 @@ const OfferForm = <T extends Offer | NewOffer>({
   offer,
   onSubmit,
 }: OfferFormProps<T>): JSX.Element => {
+  const dispatch = useAppDispatch();
   const {
     title,
     description,
@@ -73,9 +77,14 @@ const OfferForm = <T extends Offer | NewOffer>({
   const [chosenCity, setChosenCity] = useState(city);
   const [prevImg, setImage] = useState<File | undefined>();
 
-  type ImgArrayTypes = File | string;
 
-  const [imagesArr, setImages] = useState<ImgArrayTypes[]>(offer.images);
+  const imagesStateArr = useAppSelector(getImagesFileArr);
+  const imagesFileArr = imagesStateArr.find((el) => el.title === title)?.files;
+
+  const isNewOffer = imagesFileArr?.length === 0? true : false;
+
+  const [imagesArr, setImages] = useState<File[]>( imagesFileArr ? imagesFileArr : []);
+
 
   const handleCityChange = (value: keyof typeof CityLocation) => {
     setChosenCity(getCity(value));
@@ -101,17 +110,15 @@ const OfferForm = <T extends Offer | NewOffer>({
       return;
     }
     const index = Number(evt.target.name.substring(10, evt.target.name.length));
-
     setImages([...imagesArr.slice(0, index), evt.target.files[0], ...imagesArr.slice(index + 1)]);
-    evt.target.setAttribute('requared', 'true');
-
-
   };
 
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const formData = new FormData(form);
+    const titleStr = formData.get(FormFieldName.title) as string;
+    dispatch(setImagesFileArr({title: titleStr, files: imagesArr}));
     const data = {
       ...offer,
       title: formData.get(FormFieldName.title),
@@ -126,8 +133,7 @@ const OfferForm = <T extends Offer | NewOffer>({
       goods: getGoods(formData.entries()),
       location: chosenLocation,
       images: imagesArr,
-      prevImg: prevImg,
-      image: imagesArr
+      prevImg: prevImg
     };
 
     onSubmit(data);
@@ -183,13 +189,13 @@ const OfferForm = <T extends Offer | NewOffer>({
       </div>
       {prevImg ? (
         <img
-          className="register-form__image"
+          className="offer-form__image"
           src={URL.createObjectURL(prevImg)}
           alt=" "
         />
       ) : (
         <img
-          className="register-form__image"
+          className={`offer-form__image ${previewImage ==='' ? 'hidden__image' : ''}`}
           src={previewImage}
           alt=" "
         />
@@ -198,6 +204,18 @@ const OfferForm = <T extends Offer | NewOffer>({
         <label htmlFor="previewImage" className="offer-form__label">
           Preview Image
         </label>
+        {isNewOffer ? (
+        <input
+          className="form__input offer-form__text-input"
+          type="file"
+          placeholder="Preview image"
+          name="prevImg"
+          id="prevImg"
+          required
+          accept="image/png, image/jpeg"
+          onChange={handleImageUpload}
+        />
+        ) : (
         <input
           className="form__input offer-form__text-input"
           type="file"
@@ -207,6 +225,7 @@ const OfferForm = <T extends Offer | NewOffer>({
           accept="image/png, image/jpeg"
           onChange={handleImageUpload}
         />
+        )}
         <input
           className="form__input offer-form__text-input"
           type="hidden"
@@ -222,50 +241,49 @@ const OfferForm = <T extends Offer | NewOffer>({
             <label htmlFor={`image=${index}`} className="offer-form__label">
           Offer Image #{index + 1}
             </label>
-            {(imagesArr[index] instanceof File) ? (
-              <div>
-                <img
-                  className="register-form__image"
-                  src={URL.createObjectURL(imagesArr[index] as File)}
-                  alt=" "
-                />
                 <input
                   className="form__input offer-form__text-input"
                   type="hidden"
                   placeholder="Offer image hidden"
-                  name={`${FormFieldName.image}-${index}`}
-                  id={`image-${index}`}
+                  name={`${FormFieldName.image}hidden-${index}`}
+                  id={`image_hidden-${index}`}
                   required
-                  defaultValue={imagesArr[index] as string}
+                  defaultValue={`imagesArr-${index}`}
                 />
-              </div>
+            {(!isNewOffer) ? (
+              <div>
+              <img
+                    className={`offer-form__image ${(!imagesArr[index]) ?  'hidden__image' : '' }`}
+                    src={imagesArr[index] ? URL.createObjectURL(imagesArr[index]) : ''}
+                    alt=" "
+                  />
+                <input
+                  className="form__input offer-form__text-input"
+                  type="file"
+                  placeholder="Offer image"
+                  name={`imagesArr-${index}`}
+                  id={`imagesArr-${index}`}
+                  onChange={handleImageItemUpload}
+                 />
+             </div>
             ) : (
               <div>
-                <img
-                  className="register-form__image"
-                  src={images[index]}
-                  alt=" "
-                />
+              <img
+                    className={`offer-form__image ${(!imagesArr[index]) ?  'hidden__image' : '' }`}
+                    src={imagesArr[index] ? URL.createObjectURL(imagesArr[index]) : ''}
+                    alt=" "
+                  />
                 <input
                   className="form__input offer-form__text-input"
-                  type="hidden"
-                  placeholder="Offer image hidden"
-                  name={`${FormFieldName.image}-${index}`}
-                  id={`image-${index}`}
+                  type="file"
+                  placeholder="Offer image"
+                  name={`imagesArr-${index}`}
+                  id={`imagesArr-${index}`}
                   required
-                  defaultValue={`images-${index}`}
+                  onChange={handleImageItemUpload}
                 />
-              </div>
-            )}
-            <input
-              className="form__input offer-form__text-input"
-              type="file"
-              placeholder="Offer image"
-              name={`imagesArr-${index}`}
-              id={`imagesArr-${index}`}
-              required
-              onChange={handleImageItemUpload}
-            />
+                </div>
+          )}
           </div>
         ))}
 

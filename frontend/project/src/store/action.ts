@@ -88,7 +88,6 @@ export const postOffer = createAsyncThunk<Offer, NewOffer, { extra: Extra }>(
   async (newOffer, { extra }) => {
     const { api, history } = extra;
     const { data } = await api.post<OfferDto>(`${ApiRoute.Offers}/create`, adaptCreateOfferToServer(newOffer));
-    history.push(`${AppRoute.Property}/${data.id}`);
 
     if (data) {
 
@@ -103,6 +102,7 @@ export const postOffer = createAsyncThunk<Offer, NewOffer, { extra: Extra }>(
       });
     }
 
+    history.push(`${AppRoute.Property}/${data.id}`);
     return adaptOfferToClient(data);
   });
 
@@ -121,6 +121,7 @@ export const editOffer = createAsyncThunk<Offer, EditOffer, { extra: Extra }>(
       headers: { 'Content-Type': 'multipart/form-data boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW' },
     });
     const { data } = await api.patch<OfferDto>(`${ApiRoute.Offers}/${offer.id}`, adaptEditOfferToServer(offer));
+
     history.push(`${AppRoute.Property}/${data.id}`);
 
     return adaptOfferToClient(data);
@@ -130,15 +131,11 @@ export const deleteOffer = createAsyncThunk<Offer[], string, { extra: Extra }>(
   Action.DELETE_OFFER,
   async (id, { extra }) => {
     const { api, history } = extra;
-    await api.delete(`${ApiRoute.Offers}/${id}`);
 
+    const {data} = await api.delete(`${ApiRoute.Offers}/${id}`);
 
-    const { data } = await api.delete(`${ApiRoute.Offers}/${id}`);
-  //  history.push(AppRoute.Root);
-    console.log('deleteOffer_2', data);
-    adaptOffersToClient(data);
     history.push(AppRoute.Root);
-    return data;
+    return adaptOffersToClient(data);
   });
 
 

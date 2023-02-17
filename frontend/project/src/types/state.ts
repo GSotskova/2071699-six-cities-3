@@ -1,6 +1,6 @@
 import store from '../store';
 
-import type { Offer, Comment, City, SortName, User } from './types';
+import type { Offer, Comment, City, SortName, User, ImagesFile } from './types';
 import { AuthorizationStatus, SubmitStatus } from '../const';
 
 
@@ -19,6 +19,7 @@ export type SiteData = {
 export type SiteProcess = {
     city: City;
     sorting: SortName;
+    imagesFileArr: ImagesFile[];
 }
 
 export type UserProcess = {

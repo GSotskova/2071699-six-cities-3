@@ -1,6 +1,10 @@
-.register-form__image {
+.offer-form__image {
   width: 74px;
   height: 74px;
 
 }
 
+.hidden__image {
+  visibility: hidden
+
+}

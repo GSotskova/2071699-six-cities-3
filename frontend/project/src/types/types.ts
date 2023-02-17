@@ -78,3 +78,8 @@ export type UserRegister = Omit<User, 'avatarUrl'> &
   Pick<UserAuth, 'password'> & { avatar?: File };
 export type Offers = Offer[]
 export type Comments = Comment[];
+
+export type ImagesFile = {
+  title: string;
+  files: File[];
+}

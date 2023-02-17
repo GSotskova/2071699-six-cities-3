@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import type { SiteProcess } from '../../types/state';
-import type { CityName, SortName } from '../../types/types';
+import type { CityName, ImagesFile, SortName } from '../../types/types';
 import { CITIES, CityLocation, Sorting, StoreSlice } from '../../const';
 
 const initialState: SiteProcess = {
@@ -10,6 +10,10 @@ const initialState: SiteProcess = {
     location: CityLocation[CITIES[0]],
   },
   sorting: Sorting.Popular,
+  imagesFileArr: [{
+    title: '',
+    files: []
+  }]
 };
 
 export const siteProcess = createSlice({
@@ -24,8 +28,17 @@ export const siteProcess = createSlice({
     },
     setSorting: (state, action: PayloadAction<SortName>) => {
       state.sorting = action.payload;
+    },
+    setImagesFileArr: (state, action: PayloadAction<ImagesFile>) => {
+      const currentElement = state.imagesFileArr.find((el) => el.title === action.payload.title);
+      const index = currentElement ? state.imagesFileArr.indexOf(currentElement) : null;
+      if (index) {
+      state.imagesFileArr = [...state.imagesFileArr.slice(0, index), action.payload, ...state.imagesFileArr.slice(index + 1)];
+      } else {
+        state.imagesFileArr.push(action.payload);
+      }
     }
   },
 });
 
-export const { setCity, setSorting } = siteProcess.actions;
+export const { setCity, setSorting, setImagesFileArr } = siteProcess.actions;

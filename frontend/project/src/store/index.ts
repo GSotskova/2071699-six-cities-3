@@ -15,6 +15,7 @@ const store = configureStore({
         history
       },
     },
+    serializableCheck: false,
   }),
 });
 
