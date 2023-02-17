@@ -2,15 +2,22 @@ import { Link, Outlet, useLocation } from 'react-router-dom';
 
 import { AppRoute } from '../../const';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { getFavoriteOffers } from '../../store/site-data/selectors';
+import { getFavoriteOffers, selectOffers } from '../../store/site-data/selectors';
 import { getIsAuthorized, getUser, getUserAvatar } from '../../store/user-process/selectors';
-import { logoutUser } from '../../store/action';
+import { fetchFavoriteOffers, logoutUser } from '../../store/action';
+import { useEffect } from 'react';
 
 const pagesWithoutNavigation = [AppRoute.Login, AppRoute.Register];
 
 const Header = () => {
   const { pathname } = useLocation() as { pathname: AppRoute };
   const dispatch = useAppDispatch();
+  const offers = useAppSelector(selectOffers);
+  useEffect(() => {
+    dispatch(fetchFavoriteOffers());
+  }, [offers]);
+
+
   const isAuthorized = useAppSelector(getIsAuthorized);
   const user = useAppSelector(getUser);
   const userAvatar = useAppSelector(getUserAvatar);

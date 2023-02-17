@@ -11,6 +11,7 @@ import {
   fetchComments,
   postComment,
   deleteOffer,
+  deleteFavorite,
 } from '../../store/action';
 import Spinner from '../../components/spinner/spinner';
 import { capitalize, getStarsWidth, pluralize } from '../../utils/utils';
@@ -90,6 +91,7 @@ const Property = (): JSX.Element | null => {
 
   const handleDeleteClick = () => {
     dispatch(deleteOffer(id));
+    dispatch(deleteFavorite(id));
   };
 
   const handleFormSubmit = (formData: NewComment) => {

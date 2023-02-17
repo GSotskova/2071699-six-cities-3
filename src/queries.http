@@ -42,12 +42,12 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InJyckByci5ydSIsImlkIjoiNjNlYTU5MzM2MDM5M2IzMTc5M2VkNmJmIiwiaWF0IjoxNjc2NDY0NjEzLCJleHAiOjE2NzY2Mzc0MTN9.lCQpOMWKlrGeTsD7fqAkhTyNmO-Fja4IBrSvAPIM5_A
 
 {
-  "title": "Offerrr 173",
+  "title": "Offerrr 178",
   "description": "Предложения ПредложенияПредложенияПредложения1055",
   "postDate": "2023-01-25T08:20:40.283Z",
   "city": "Paris",
   "isPremium": true,
-  "isFavorite":true,
+  "isFavorite":false,
   "rating": 2,
   "type": "room",
   "rooms": 1,
@@ -77,7 +77,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InJyckByci5ydSIsImlkIjoiN
 ## Получить список предложений по аренде (5.4)
 GET http://localhost:4000/?limit=10 HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InJyckByci5ydSIsImlkIjoiNjNlYTU5MzM2MDM5M2IzMTc5M2VkNmJmIiwiaWF0IjoxNjc2NDEzNjkyLCJleHAiOjE2NzY1ODY0OTJ9.KshK1jHkm0oMvme1-rK5sEHivn8LPhOM-G2StXFMQB0
+///Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InJyckByci5ydSIsImlkIjoiNjNlYTU5MzM2MDM5M2IzMTc5M2VkNmJmIiwiaWF0IjoxNjc2NDEzNjkyLCJleHAiOjE2NzY1ODY0OTJ9.KshK1jHkm0oMvme1-rK5sEHivn8LPhOM-G2StXFMQB0
 
 ###
 
