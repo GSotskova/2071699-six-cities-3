@@ -18,7 +18,7 @@ const CardList = (): JSX.Element => {
 
   useEffect(() => {
     dispatch(fetchOffers());
-  }, []);
+  }, [dispatch]);
 
   const activeSorting = useAppSelector(getSorting);
   const activeCity = useAppSelector(getCity);

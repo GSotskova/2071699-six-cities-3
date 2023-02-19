@@ -15,7 +15,7 @@ const Header = () => {
   const offers = useAppSelector(selectOffers);
   useEffect(() => {
     dispatch(fetchFavoriteOffers());
-  }, [offers]);
+  }, [dispatch, offers]);
 
 
   const isAuthorized = useAppSelector(getIsAuthorized);

@@ -1,5 +1,5 @@
 import UpdateOfferDto from '../../dto/offer/update-offer.dto';
-import {CommentAuth, EditOffer, NewComment, NewOffer, UserRegister} from '../../types/types';
+import {CommentAuth, EditOffer, NewOffer, UserRegister} from '../../types/types';
 import CreateOfferDto from '../../dto/offer/create-offer.dto';
 import CreateCommentDto from '../../dto/comment/create-comment.dto';
 import {HomeType} from '../../types/home-type.enum';

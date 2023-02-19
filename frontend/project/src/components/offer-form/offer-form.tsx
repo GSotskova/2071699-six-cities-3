@@ -81,7 +81,7 @@ const OfferForm = <T extends Offer | NewOffer>({
   const imagesStateArr = useAppSelector(getImagesFileArr);
   const imagesFileArr = imagesStateArr.find((el) => el.title === title)?.files;
 
-  const isNewOffer = imagesFileArr?.length === 0? true : false;
+  const isNewOffer = imagesFileArr?.length === 0;
 
   const [imagesArr, setImages] = useState<File[]>( imagesFileArr ? imagesFileArr : []);
 
@@ -195,7 +195,7 @@ const OfferForm = <T extends Offer | NewOffer>({
         />
       ) : (
         <img
-          className={`offer-form__image ${previewImage ==='' ? 'hidden__image' : ''}`}
+          className={`offer-form__image ${previewImage === '' ? 'hidden__image' : ''}`}
           src={previewImage}
           alt=" "
         />
@@ -205,26 +205,26 @@ const OfferForm = <T extends Offer | NewOffer>({
           Preview Image
         </label>
         {isNewOffer ? (
-        <input
-          className="form__input offer-form__text-input"
-          type="file"
-          placeholder="Preview image"
-          name="prevImg"
-          id="prevImg"
-          required
-          accept="image/png, image/jpeg"
-          onChange={handleImageUpload}
-        />
+          <input
+            className="form__input offer-form__text-input"
+            type="file"
+            placeholder="Preview image"
+            name="prevImg"
+            id="prevImg"
+            required
+            accept="image/png, image/jpeg"
+            onChange={handleImageUpload}
+          />
         ) : (
-        <input
-          className="form__input offer-form__text-input"
-          type="file"
-          placeholder="Preview image"
-          name="prevImg"
-          id="prevImg"
-          accept="image/png, image/jpeg"
-          onChange={handleImageUpload}
-        />
+          <input
+            className="form__input offer-form__text-input"
+            type="file"
+            placeholder="Preview image"
+            name="prevImg"
+            id="prevImg"
+            accept="image/png, image/jpeg"
+            onChange={handleImageUpload}
+          />
         )}
         <input
           className="form__input offer-form__text-input"
@@ -241,22 +241,22 @@ const OfferForm = <T extends Offer | NewOffer>({
             <label htmlFor={`image=${index}`} className="offer-form__label">
           Offer Image #{index + 1}
             </label>
-                <input
-                  className="form__input offer-form__text-input"
-                  type="hidden"
-                  placeholder="Offer image hidden"
-                  name={`${FormFieldName.image}hidden-${index}`}
-                  id={`image_hidden-${index}`}
-                  required
-                  defaultValue={`imagesArr-${index}`}
-                />
+            <input
+              className="form__input offer-form__text-input"
+              type="hidden"
+              placeholder="Offer image hidden"
+              name={`${FormFieldName.image}hidden-${index}`}
+              id={`image_hidden-${index}`}
+              required
+              defaultValue={`imagesArr-${index}`}
+            />
             {(!isNewOffer) ? (
               <div>
-              <img
-                    className={`offer-form__image ${(!imagesArr[index]) ?  'hidden__image' : '' }`}
-                    src={imagesArr[index] ? URL.createObjectURL(imagesArr[index]) : ''}
-                    alt=" "
-                  />
+                <img
+                  className={`offer-form__image ${(!imagesArr[index]) ? 'hidden__image' : '' }`}
+                  src={imagesArr[index] ? URL.createObjectURL(imagesArr[index]) : ''}
+                  alt=" "
+                />
                 <input
                   className="form__input offer-form__text-input"
                   type="file"
@@ -264,15 +264,15 @@ const OfferForm = <T extends Offer | NewOffer>({
                   name={`imagesArr-${index}`}
                   id={`imagesArr-${index}`}
                   onChange={handleImageItemUpload}
-                 />
-             </div>
+                />
+              </div>
             ) : (
               <div>
-              <img
-                    className={`offer-form__image ${(!imagesArr[index]) ?  'hidden__image' : '' }`}
-                    src={imagesArr[index] ? URL.createObjectURL(imagesArr[index]) : ''}
-                    alt=" "
-                  />
+                <img
+                  className={`offer-form__image ${(!imagesArr[index]) ? 'hidden__image' : '' }`}
+                  src={imagesArr[index] ? URL.createObjectURL(imagesArr[index]) : ''}
+                  alt=" "
+                />
                 <input
                   className="form__input offer-form__text-input"
                   type="file"
@@ -282,8 +282,8 @@ const OfferForm = <T extends Offer | NewOffer>({
                   required
                   onChange={handleImageItemUpload}
                 />
-                </div>
-          )}
+              </div>
+            )}
           </div>
         ))}
 

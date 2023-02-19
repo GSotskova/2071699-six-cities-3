@@ -33,7 +33,7 @@ export const siteProcess = createSlice({
       const currentElement = state.imagesFileArr.find((el) => el.title === action.payload.title);
       const index = currentElement ? state.imagesFileArr.indexOf(currentElement) : null;
       if (index) {
-      state.imagesFileArr = [...state.imagesFileArr.slice(0, index), action.payload, ...state.imagesFileArr.slice(index + 1)];
+        state.imagesFileArr = [...state.imagesFileArr.slice(0, index), action.payload, ...state.imagesFileArr.slice(index + 1)];
       } else {
         state.imagesFileArr.push(action.payload);
       }

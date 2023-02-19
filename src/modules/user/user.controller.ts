@@ -19,6 +19,7 @@ import { DocumentExistsMiddleware } from '../../common/middlewares/document-exis
 import LoggedUserResponse from './response/logged-user.response.js';
 import UploadUserAvatarResponse from './response/upload-user-avatar.response.js';
 import { OfferServiceInterface } from '../offer/offer-service.interface.js';
+import { EntityName, FieldName, ObjectParams } from '../../const.js';
 
 
 @injectable()
@@ -56,8 +57,8 @@ export default class UserController extends Controller {
       handler: this.uploadAvatar,
       middlewares: [
         new ValidateObjectIdMiddleware('userId'),
-        new DocumentExistsMiddleware(this.userService, 'User', 'userId'),
-        new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY'), 'avatar'),
+        new DocumentExistsMiddleware(this.userService, EntityName.User, ObjectParams.UserId),
+        new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY'), FieldName.Avatar),
       ]
     });
   }

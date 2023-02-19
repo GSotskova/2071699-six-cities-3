@@ -1,11 +1,9 @@
 import { UserType } from '../../const';
 import CommentDto from '../../dto/comment/comment.dto';
 import OfferDto from '../../dto/offer/offer.dto';
-import UpdateOfferDto from '../../dto/offer/update-offer.dto';
 import UserWithTokenDto from '../../dto/user/user-with-token.dto';
 import UserDto from '../../dto/user/user.dto';
-import { CityType } from '../../types/city-type.enum';
-import {User, Offers, Comments, Comment, Offer, EditOffer} from '../../types/types';
+import {User, Offers, Comments, Comment, Offer} from '../../types/types';
 import { UserTypeServer } from '../../types/user-type.enum';
 
 

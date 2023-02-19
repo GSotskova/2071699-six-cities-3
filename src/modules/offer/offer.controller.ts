@@ -26,6 +26,7 @@ import {UploadFileMiddleware} from '../../common/middlewares/upload-file.middlew
 import UploadImageResponse from './response/upload-image.response.js';
 import {UploadFilesMiddleware} from '../../common/middlewares/upload-files.middleware.js';
 import UploadImagesResponse from './response/upload-images.response.js';
+import { EntityName, FieldName, ObjectParams } from '../../const.js';
 
 type ParamsGetOffer = {
   offerId: string;
@@ -66,8 +67,8 @@ export default class OfferController extends Controller {
       handler: this.show,
       middlewares: [
         new PrivateRouteMiddleware(),
-        new ValidateObjectIdMiddleware('offerId'),
-        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+        new ValidateObjectIdMiddleware(ObjectParams.OfferId),
+        new DocumentExistsMiddleware(this.offerService, EntityName.Offer, ObjectParams.OfferId),
       ]
     });
     this.addRoute({
@@ -76,8 +77,8 @@ export default class OfferController extends Controller {
       handler: this.setStatusFavotite,
       middlewares: [
         new PrivateRouteMiddleware(),
-        new ValidateObjectIdMiddleware('offerId'),
-        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+        new ValidateObjectIdMiddleware(ObjectParams.OfferId),
+        new DocumentExistsMiddleware(this.offerService, EntityName.Offer, ObjectParams.OfferId),
       ]
     });
     this.addRoute({
@@ -86,8 +87,8 @@ export default class OfferController extends Controller {
       handler: this.deleteStatusFavotite,
       middlewares: [
         new PrivateRouteMiddleware(),
-        new ValidateObjectIdMiddleware('offerId'),
-        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+        new ValidateObjectIdMiddleware(ObjectParams.OfferId),
+        new DocumentExistsMiddleware(this.offerService, EntityName.Offer, ObjectParams.OfferId),
       ]
     });
     this.addRoute({path: '/premium', method: HttpMethod.Get, handler: this.showPremium});
@@ -97,9 +98,9 @@ export default class OfferController extends Controller {
       handler: this.update,
       middlewares: [
         new PrivateRouteMiddleware(),
-        new ValidateObjectIdMiddleware('offerId'),
+        new ValidateObjectIdMiddleware(ObjectParams.OfferId),
         new ValidateDtoMiddleware(UpdateOfferDto),
-        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+        new DocumentExistsMiddleware(this.offerService, EntityName.Offer, ObjectParams.OfferId),
       ]
     });
     this.addRoute({
@@ -108,8 +109,8 @@ export default class OfferController extends Controller {
       handler: this.delete,
       middlewares: [
         new PrivateRouteMiddleware(),
-        new ValidateObjectIdMiddleware('offerId'),
-        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+        new ValidateObjectIdMiddleware(ObjectParams.OfferId),
+        new DocumentExistsMiddleware(this.offerService, EntityName.Offer, ObjectParams.OfferId),
       ]
     });
     this.addRoute({
@@ -117,8 +118,8 @@ export default class OfferController extends Controller {
       method: HttpMethod.Get,
       handler: this.getComments,
       middlewares: [
-        new ValidateObjectIdMiddleware('offerId'),
-        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+        new ValidateObjectIdMiddleware(ObjectParams.OfferId),
+        new DocumentExistsMiddleware(this.offerService, EntityName.Offer, ObjectParams.OfferId),
       ]
     });
     this.addRoute({
@@ -127,8 +128,8 @@ export default class OfferController extends Controller {
       handler: this.uploadPrevImage,
       middlewares: [
         new PrivateRouteMiddleware(),
-        new ValidateObjectIdMiddleware('offerId'),
-        new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY'), 'prevImg'),
+        new ValidateObjectIdMiddleware(ObjectParams.OfferId),
+        new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY'), FieldName.PrevImg),
       ]
     });
     this.addRoute({
@@ -137,8 +138,8 @@ export default class OfferController extends Controller {
       handler: this.uploadImages,
       middlewares: [
         new PrivateRouteMiddleware(),
-        new ValidateObjectIdMiddleware('offerId'),
-        new UploadFilesMiddleware(this.configService.get('UPLOAD_DIRECTORY'), 'image'),
+        new ValidateObjectIdMiddleware(ObjectParams.OfferId),
+        new UploadFilesMiddleware(this.configService.get('UPLOAD_DIRECTORY'), FieldName.Image),
       ]
     });
   }
